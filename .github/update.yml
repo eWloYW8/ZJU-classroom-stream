@@ -35,8 +35,4 @@ jobs:
         git config --global user.email "actions@github.com"
         git add stream_db.json
         git commit -m "Auto-update stream data" || echo "No changes to commit"
-
-    - name: Push changes
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: git push
+        git push
