@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZJU Classroom WebRTC Player</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .player-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        #video-webrtc {
+            width: 100%;
+            height: 70vh;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            background: black;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        #streamid-input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        #play-button {
+            padding: 10px 20px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .stream-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .stream-item {
+            padding: 12px;
+            margin: 8px 0;
+            background: #f8f9fa;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .stream-item:hover {
+            background: #e9ecef;
+            transform: translateX(4px);
+        }
+
+        .stream-item.active {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .loading {
+            padding: 20px;
+            text-align: center;
+            color: #666;
+        }
+
+        .error {
+            color: #dc3545;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Available Streams</h2>
+        <div class="loading" id="loading">Loading streams...</div>
+        <ul class="stream-list" id="streamList"></ul>
+        <div class="error" id="error" style="display: none;"></div>
+    </div>
+
+    <div class="player-container">
+        <video id="video-webrtc" controls></video>
+        <div class="controls">
+            <input type="text" id="streamid-input" placeholder="Enter stream ID">
+            <button id="play-button">Play</button>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="jswebrtc.min.js"></script>
+    <script>
+        let currentPlayer = null;
+        let currentStreamId = null;
+
+        // 加载流列表
+        async function loadStreams() {
+            try {
+                const response = await fetch('https://mcloudpush.cmc.zju.edu.cn:10443/streams');
+                const data = await response.json();
+                const streams = data.streams.flatMap(stream => Object.keys(stream));
+                
+                const list = document.getElementById('streamList');
+                const loading = document.getElementById('loading');
+                const error = document.getElementById('error');
+
+                loading.style.display = 'none';
+                error.style.display = 'none';
+
+                streams.forEach(streamId => {
+                    const li = document.createElement('li');
+                    li.className = 'stream-item';
+                    li.textContent = streamId;
+                    li.addEventListener('click', () => playStream(streamId));
+                    list.appendChild(li);
+                });
+            } catch (err) {
+                console.error('Failed to load streams:', err);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').textContent = 'Failed to load stream list';
+            }
+        }
+
+        // 播放流
+        function playStream(streamId) {
+            if (currentStreamId === streamId) return;
+
+            // 清除当前播放状态
+            if (currentPlayer) {
+                currentPlayer.destroy();
+                document.querySelector(`.stream-item.active`)?.classList.remove('active');
+            }
+
+            // 更新界面状态
+            currentStreamId = streamId;
+            document.getElementById('streamid-input').value = streamId;
+            Array.from(document.getElementsByClassName('stream-item')).forEach(item => {
+                if (item.textContent === streamId) {
+                    item.classList.add('active');
+                }
+            });
+
+            // 初始化播放器
+            const video = document.getElementById('video-webrtc');
+            const url = `webrtc://mcloudpush.cmc.zju.edu.cn/live/${streamId}`;
+            
+            currentPlayer = new JSWebrtc.Player(url, {
+                video: video,
+                autoplay: true,
+                onPlay: () => console.log(`Playing ${streamId}`),
+                onError: (err) => {
+                    console.error('Playback error:', err);
+                    alert(`播放失败: ${err.message}`);
+                }
+            });
+        }
+
+        // 初始化
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStreams();
+            
+            // 手动播放按钮
+            document.getElementById('play-button').addEventListener('click', () => {
+                const streamId = document.getElementById('streamid-input').value.trim();
+                if (streamId) {
+                    playStream(streamId);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
