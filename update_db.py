@@ -69,7 +69,11 @@ if __name__ == "__main__":
         data = json.load(open("stream_db.json", "r", encoding="utf-8"))
     else:
         data = {}
+    print("Original data:" + str(data))
     session = ZJUClassroomSession(os.environ["ZJUAM_USERNAME"], os.environ["ZJUAM_PASSWORD"])
-    data.update(session.get_all_room_and_stream_id())
+    new_data = session.get_all_room_and_stream_id()
+    print("New data:" + str(new_data))
+    data.update(new_data)
+    print("Updated data:" + str(data))
     with open("stream_db.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)

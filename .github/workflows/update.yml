@@ -9,9 +9,15 @@ jobs:
   update:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        persist-credentials: true
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -34,5 +40,5 @@ jobs:
         git config --global user.name "GitHub Actions"
         git config --global user.email "actions@github.com"
         git add stream_db.json
-        git commit -m "Auto-update stream data" || echo "No changes to commit"
+        git commit -m "Auto-update: $(date -u '+%Y-%m-%dT%H:%M:%SZ')" || echo "No changes to commit"
         git push
