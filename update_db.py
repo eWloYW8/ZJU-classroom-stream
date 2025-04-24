@@ -11,13 +11,13 @@ headers = {
 }
 
 class ZJUClassroomSession:
-    zjuclassroom_login_url = "https://tgmedia.cmc.zju.edu.cn/index.php?r=auth/login&auType=&tenant_code=112&forward=https%3A%2F%2Fclassroom.zju.edu.cn%2F"
-    zjuam_login_url = "https://zjuam.zju.edu.cn/cas/login?service=http%3A%2F%2Fzjuam.zju.edu.cn%2Fcas%2Foauth2.0%2FcallbackAuthorize"
+    zjuclassroom_login_url = "https://tgmedia.cmc.zju.edu.cn/index.php?r=auth/login&auType=cmc&tenant_code=112&forward=https%3A%2F%2Fclassroom.zju.edu.cn%2F"
+    zjuam_login_url = "https://zjuam.zju.edu.cn/cas/login"
     zjuam_pubkey_url = 'https://zjuam.zju.edu.cn/cas/v2/getPubKey'
 
     def __init__(self, username, password):
         self.session = requests.session()
-        zjuam_login_resp=self.session.get(self.zjuclassroom_login_url, allow_redirects=True)
+        zjuam_login_resp=self.session.get(self.zjuam_login_url, allow_redirects=True)
         zjuam_pubkey_resp=self.session.get(self.zjuam_pubkey_url)
         password_bytes = bytes(password, 'ascii')
         password_int = int.from_bytes(password_bytes, 'big')
@@ -33,7 +33,7 @@ class ZJUClassroomSession:
             'authcode': '',
         }
         zjuam_login_resp=self.session.post(self.zjuam_login_url,headers=headers,data=zjuam_login_data,verify=False,allow_redirects=True)
-        self.session.get("https://classroom.zju.edu.cn",headers=headers)
+        self.session.get(self.zjuclassroom_login_url,headers=headers,allow_redirects=True)
     
     def get_live_courses(self):
         response = self.session.get("https://classroom.zju.edu.cn/courseapi/v2/course-live/search-live-course-list?sub_live_status=ing").json()["list"]
