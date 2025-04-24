@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZJU Classroom Stream</title>
+    <link href="https://cdn.bootcdn.net/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.1.5/dist/hls.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2196f3;
+            --secondary-color: #2a84ea;
+            --background-gradient: linear-gradient(135deg, #348fef 0%);
+        }
+
+        * {
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            margin: 0;
+            background: #f0f2f5;
+        }
+
+        .header {
+            background: var(--background-gradient);
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+            font-family: 'Helvetica Neue', Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+
+        .container {
+            display: flex;
+            height: calc(100vh - 76px);
+        }
+
+        .sidebar {
+            width: 300px;
+            background: rgba(255,255,255,0.95);
+            padding: 1.5rem;
+            overflow-y: auto;
+            box-shadow: 4px 0 12px rgba(0,0,0,0.08);
+            position: relative;
+        }
+
+        .search-box {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            border: 2px solid #e0e0e0;
+            border-radius: 30px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(33,150,243,0.2);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9e9e9e;
+        }
+
+        .video-container {
+            flex: 1;
+            padding: 2rem;
+            background: linear-gradient(45deg, #f8f9fa 0%, #f1f3f5 100%);
+            position: relative;
+        }
+
+        .channel-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .channel-item {
+            padding: 14px 20px;
+            margin: 8px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            background: #ffffff;
+            border: 2px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            opacity: 1;
+            transform: scale(1);
+            word-wrap: break-word;
+            word-break: break-word;
+        }
+
+        .channel-item:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 12px rgba(33,150,243,0.15);
+            transform: translateX(8px) scale(1.02);
+        }
+
+        .channel-item.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--secondary-color);
+            box-shadow: 0 4px 16px rgba(33,150,243,0.3);
+        }
+
+        .channel-item.hidden {
+            opacity: 0;
+            transform: scale(0.9);
+            height: 0;
+            margin: 0;
+            padding: 0;
+            border: 0;
+        }
+
+        #video-player {
+            width: 100%;
+            height: 80vh;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            background: #000;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .loading-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: var(--primary-color);
+            font-size: 18px;
+            opacity: 0;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: 40vh;
+            }
+            
+            #video-player {
+                height: 60vh;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>ZJU Classroom Stream</h1>
+    </div>
+    
+    <div class="container">
+        <div class="sidebar">
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Type Classroom" id="searchInput">
+            </div>
+            <ul class="channel-list" id="channelList">
+                <div class="loading-text" id="loadingText">Loading...</div>
+            </ul>
+        </div>
+        
+        <div class="video-container">
+            <video id="video-player" controls></video>
+        </div>
+    </div>
+
+    <script>
+        // 初始化HLS播放器
+        const video = document.getElementById('video-player');
+        let hls = null;
+        let allChannels = [];
+
+        function initVideoPlayer(streamUrl) {
+            if (hls) {
+                hls.destroy();
+            }
+            
+            if (Hls.isSupported()) {
+                hls = new Hls();
+                hls.loadSource(streamUrl);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    video.play();
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                video.src = streamUrl;
+                video.addEventListener('loadedmetadata', () => {
+                    video.play();
+                });
+            }
+        }
+
+        // 搜索功能
+        function filterChannels(keyword) {
+            const normalizedKeyword = keyword.toLowerCase().trim();
+            
+            allChannels.forEach(item => {
+                const isMatch = item.name.toLowerCase().includes(normalizedKeyword);
+                item.element.classList.toggle('hidden', !isMatch);
+            });
+
+            // 自动选择第一个可见项
+            const firstVisible = allChannels.find(item => !item.element.classList.contains('hidden'));
+            if (firstVisible) {
+                firstVisible.element.click();
+            }
+        }
+
+        // 加载频道列表
+        async function loadChannelList() {
+            try {
+                document.getElementById('loadingText').style.opacity = 1;
+                
+                const response = await fetch('stream_db.json');
+                const channels = await response.json();
+
+                try {
+                    const response_extended = await fetch("https://mcloudpush.cmc.zju.edu.cn:10443/streams");
+                    if (response_extended.ok) {
+                        const data = await response_extended.json();
+
+                        data.streams.forEach(stream => {
+                            const streamKey = Object.keys(stream)[0];
+                            if (!channels.hasOwnProperty(streamKey)) {
+                                channels[`Unknown: ${streamKey}`] = streamKey;
+                            }
+                        });
+                    } else {
+                        console.warn(`Extended fetch failed with status: ${response_extended.status}`);
+                    }
+                } catch (error) {
+                    console.error('Error fetching extended data:', error);
+                }
+
+                const channelList = document.getElementById('channelList');
+                
+                allChannels = Object.entries(channels).map(([name, sessionId], index) => {
+                    const listItem = document.createElement('li');
+                    listItem.className = 'channel-item';
+                    listItem.textContent = name;
+                    
+                    listItem.addEventListener('click', () => {
+                        document.querySelectorAll('.channel-item').forEach(item => {
+                            item.classList.remove('active');
+                        });
+                        listItem.classList.add('active');
+                        const streamUrl = `https://livepgc.cmc.zju.edu.cn/pgc/${sessionId}.m3u8`;
+                        initVideoPlayer(streamUrl);
+                    });
+
+                    channelList.appendChild(listItem);
+                    return { name, element: listItem };
+                });
+
+                // 初始化搜索功能
+                document.getElementById('searchInput').addEventListener('input', (e) => {
+                    filterChannels(e.target.value);
+                });
+
+                // 默认选中第一个
+                if (allChannels.length > 0) {
+                    allChannels[0].element.click();
+                }
+
+                document.getElementById('loadingText').style.opacity = 0;
+                
+            } catch (error) {
+                console.error('Failed to load stream list:', error);
+                document.getElementById('loadingText').textContent = "Load failed, try refreshing the page.";
+            }
+        }
+
+        // 页面加载
+        window.addEventListener('DOMContentLoaded', loadChannelList);
+    </script>
+</body>
+</html>
