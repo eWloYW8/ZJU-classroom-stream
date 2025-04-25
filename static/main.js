@@ -7,7 +7,14 @@ let currentMode = 'hls';
 let allChannels = [];
 
 function initHLSPlayer(streamId) {
-    if (hls) hls.destroy();
+    if (currentPlayer) {
+        currentPlayer.destroy();
+        currentPlayer = null;
+    }
+    if (hls) {
+        hls.destroy();
+        hls = null;
+    }
     videoWebRTC.style.display = 'none';
     videoHLS.style.display = 'block';
     const streamUrl = `https://livepgc.cmc.zju.edu.cn/pgc/${streamId}.m3u8`;
@@ -23,7 +30,14 @@ function initHLSPlayer(streamId) {
 }
 
 function initWebRTCPlayer(streamId) {
-    if (currentPlayer) currentPlayer.destroy();
+    if (hls) {
+        hls.destroy();
+        hls = null;
+    }
+    if (currentPlayer) {
+        currentPlayer.destroy();
+        currentPlayer = null;
+    }
     videoHLS.style.display = 'none';
     videoWebRTC.style.display = 'block';
     const url = `webrtc://mcloudpush.cmc.zju.edu.cn/live/${streamId}`;
