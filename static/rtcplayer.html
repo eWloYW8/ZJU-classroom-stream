@@ -175,7 +175,7 @@
                 autoplay: true,
                 onPlay: () => console.log(`Playing ${streamId}`),
                 onError: (err) => {
-                    console.error('Playback error:', err);
+                    console.error('Play error:', err);
                     alert(`播放失败: ${err.message}`);
                 }
             });

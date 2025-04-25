@@ -208,7 +208,7 @@ body {
     font-weight: bold;
 }
 
-.playback-hint {
+.play-hint {
     background: #e3f2fd;
     color: #1565c0;
     padding: 12px 16px;
@@ -221,7 +221,7 @@ body {
     box-shadow: 0 2px 8px rgba(33, 150, 243, 0.1);
 }
 
-.playback-hint i {
+.play-hint i {
     font-size: 16px;
     color: #1565c0;
 }
