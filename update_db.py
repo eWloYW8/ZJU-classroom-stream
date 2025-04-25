@@ -62,6 +62,7 @@ class ZJUClassroomSession:
             try:
                 room, stream_id = self.get_room_and_stream_id(course["id"], course["sub_id"])
                 res[room] = stream_id
+                print(f"[GET] Room: {room}, Stream ID: {stream_id}")
             except:
                 print("Error: ",course)
         return res
