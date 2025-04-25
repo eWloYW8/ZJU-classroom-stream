@@ -1,6 +1,6 @@
 # ZJU Classroom Stream
 
-A web-based platform that provides live streaming of classroom sessions at Zhejiang University. It supports both HLS and WebRTC streaming technologies, allowing users to switch between playback modes for optimal performance.
+A web-based platform that provides live streaming of classroom sessions at Zhejiang University.
 
 ## Features
 
@@ -56,7 +56,7 @@ A web-based platform that provides live streaming of classroom sessions at Zheji
 1. Open the web application in your browser.
 2. Use the search bar to find a classroom by name.
 3. Select a classroom from the list to start streaming.
-4. Switch between HLS and WebRTC playback modes using the toggle buttons.
+4. Switch between HLS and WebRTC modes using the toggle buttons.
 
 ## Project Structure
 
@@ -86,7 +86,7 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Acknowledgments
 
-- [HLS.js](https://github.com/video-dev/hls.js) for HLS playback.
+- [HLS.js](https://github.com/video-dev/hls.js) for HLS streaming.
 - [JSWebrtc](https://github.com/kernelj/jswebrtc) for WebRTC streaming.
 
 ## Disclaimer
