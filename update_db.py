@@ -59,8 +59,11 @@ class ZJUClassroomSession:
         courses = self.get_live_courses()
         res = {}
         for course in courses:
-            room, stream_id = self.get_room_and_stream_id(course["id"], course["sub_id"])
-            res[room] = stream_id
+            try:
+                room, stream_id = self.get_room_and_stream_id(course["id"], course["sub_id"])
+                res[room] = stream_id
+            except:
+                print("Error: ",course)
         return res
 
 
