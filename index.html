@@ -238,7 +238,11 @@
                 document.getElementById('loadingText').style.opacity = 1;
                 
                 const response = await fetch('stream_db.json');
-                const channels = await response.json();
+                let channels = await response.json();
+                channels = Object.keys(channels).sort().reduce((sorted, key) => {
+                    sorted[key] = channels[key];
+                    return sorted;
+                }, {});
 
                 try {
                     const response_extended = await fetch("https://mcloudpush.cmc.zju.edu.cn:10443/streams");
