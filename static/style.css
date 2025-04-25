@@ -248,7 +248,7 @@ body {
         height: 40vh;
     }
 
-    #video-player {
+    #video-player, #video-webrtc {
         height: 60vh;
     }
 }
