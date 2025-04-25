@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>ZJU Classroom Stream</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
@@ -75,6 +76,7 @@
       .github-text {
         display: none;
       }
+
       .github-corner {
         padding: 8px 12px;
       }
@@ -141,6 +143,8 @@
       border: 2px solid #f0f0f0;
       display: flex;
       align-items: center;
+      word-wrap: break-word;
+      word-break: break-word;
     }
 
     .channel-item:hover {
@@ -214,26 +218,27 @@
       color: white;
       font-weight: bold;
     }
-    
+
     .playback-hint {
-        background: #e3f2fd;
-        color: #1565c0;
-        padding: 12px 16px;
-        border-radius: 8px;
-        font-size: 14px;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        margin-bottom: 1rem;
-        box-shadow: 0 2px 8px rgba(33, 150, 243, 0.1);
+      background: #e3f2fd;
+      color: #1565c0;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1rem;
+      box-shadow: 0 2px 8px rgba(33, 150, 243, 0.1);
     }
 
     .playback-hint i {
-        font-size: 16px;
-        color: #1565c0;
+      font-size: 16px;
+      color: #1565c0;
     }
 
-    #video-player, #video-webrtc {
+    #video-player,
+    #video-webrtc {
       width: 100%;
       height: calc(100% - 120px);
       border-radius: 12px;
@@ -242,17 +247,14 @@
       border: 2px solid rgba(255, 255, 255, 0.1);
       display: none;
     }
-
   </style>
 </head>
+
 <body>
   <div class="header">
     <h1>ZJU Classroom Stream</h1>
-    <a href="https://github.com/eWloYW8/ZJU-classroom-stream" 
-       class="github-corner" 
-       target="_blank"
-       rel="noopener noreferrer"
-       aria-label="View on GitHub">
+    <a href="https://github.com/eWloYW8/ZJU-classroom-stream" class="github-corner" target="_blank"
+      rel="noopener noreferrer" aria-label="View on GitHub">
       <i class="fab fa-github github-icon"></i>
       <span class="github-text">eWloYW8/ZJU-classroom-stream</span>
     </a>
@@ -345,6 +347,24 @@
           return sorted;
         }, {});
 
+        try {
+            const response_extended = await fetch("https://mcloudpush.cmc.zju.edu.cn:10443/streams");
+            if (response_extended.ok) {
+                const data = await response_extended.json();
+
+                data.streams.forEach(stream => {
+                    const streamKey = Object.keys(stream)[0];
+                    if (!channels.hasOwnProperty(streamKey)) {
+                        channels[`Unknown: ${streamKey}`] = streamKey;
+                    }
+                });
+            } else {
+                console.warn(`Extended fetch failed with status: ${response_extended.status}`);
+            }
+        } catch (error) {
+            console.error('Error fetching extended data:', error);
+        }
+
         const listEl = document.getElementById('channelList');
 
         allChannels = Object.entries(channels).map(([name, id]) => {
@@ -393,4 +413,5 @@
     });
   </script>
 </body>
+
 </html>
