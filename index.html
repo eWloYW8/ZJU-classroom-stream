@@ -1,307 +1,349 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZJU Classroom Stream</title>
-    <link href="https://cdn.bootcdn.net/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.1.5/dist/hls.min.js"></script>
-    <style>
-        :root {
-            --primary-color: #2196f3;
-            --secondary-color: #2a84ea;
-            --background-gradient: linear-gradient(135deg, #348fef 0%);
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ZJU Classroom Stream</title>
+  <link href="https://cdn.bootcdn.net/ajax/libs/normalize/8.0.1/normalize.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/hls.js@1.1.5/dist/hls.min.js"></script>
+  <script type="text/javascript" src="static/jswebrtc.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #2196f3;
+      --secondary-color: #2a84ea;
+    }
 
-        * {
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
+    * {
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
 
-        body {
-            font-family: 'Helvetica Neue', Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-            margin: 0;
-            background: #f0f2f5;
-        }
+    body {
+      font-family: 'Helvetica Neue', Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      margin: 0;
+      background: #f0f2f5;
+    }
 
-        .header {
-            background-color: #ffffff;
-            color: #333;
-            padding: 1rem 2rem;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-            font-family: 'Helvetica Neue', Arial, 'PingFang SC', 'Microsoft YaHei', sans-serif;
-        }
-        
-        .header h1 {
-            margin: 0;
-            font-weight: 400;
-            font-size: 1.5rem;
-            letter-spacing: 0.5px;
-            color: #222;
-        }
+    .header {
+      background-color: #ffffff;
+      color: #333;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid #e0e0e0;
+    }
 
-        .container {
-            display: flex;
-            height: calc(100vh - 76px);
-        }
+    .header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 400;
+    }
 
-        .sidebar {
-            width: 300px;
-            background: rgba(255,255,255,0.95);
-            padding: 1.5rem;
-            overflow-y: auto;
-            box-shadow: 4px 0 12px rgba(0,0,0,0.08);
-            position: relative;
-        }
+    .container {
+      display: flex;
+      height: calc(100vh - 76px);
+    }
 
-        .search-box {
-            position: relative;
-            margin-bottom: 1.5rem;
-        }
+    .sidebar {
+      width: 300px;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 1.5rem;
+      overflow-y: auto;
+      box-shadow: 4px 0 12px rgba(0, 0, 0, 0.08);
+    }
 
-        .search-input {
-            width: 100%;
-            padding: 12px 16px 12px 40px;
-            border: 2px solid #e0e0e0;
-            border-radius: 30px;
-            font-size: 14px;
-            outline: none;
-        }
+    .search-box {
+      position: relative;
+      margin-bottom: 1.5rem;
+    }
 
-        .search-input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 2px 8px rgba(33,150,243,0.2);
-        }
+    .search-input {
+      width: 100%;
+      padding: 12px 16px 12px 40px;
+      border: 2px solid #e0e0e0;
+      border-radius: 30px;
+      font-size: 14px;
+      outline: none;
+    }
 
-        .search-icon {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #9e9e9e;
-        }
+    .search-input:focus {
+      border-color: var(--primary-color);
+      box-shadow: 0 2px 8px rgba(33, 150, 243, 0.2);
+    }
 
-        .video-container {
-            flex: 1;
-            padding: 2rem;
-            background: linear-gradient(45deg, #f8f9fa 0%, #f1f3f5 100%);
-            position: relative;
-        }
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #9e9e9e;
+    }
 
-        .channel-list {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
+    .channel-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
 
-        .channel-item {
-            padding: 14px 20px;
-            margin: 8px 0;
-            border-radius: 8px;
-            cursor: pointer;
-            background: #ffffff;
-            border: 2px solid #f0f0f0;
-            display: flex;
-            align-items: center;
-            opacity: 1;
-            transform: scale(1);
-            word-wrap: break-word;
-            word-break: break-word;
-        }
+    .channel-item {
+      padding: 14px 20px;
+      margin: 8px 0;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #ffffff;
+      border: 2px solid #f0f0f0;
+      display: flex;
+      align-items: center;
+    }
 
-        .channel-item:hover {
-            border-color: var(--primary-color);
-            box-shadow: 0 4px 12px rgba(33,150,243,0.15);
-            transform: translateX(8px) scale(1.02);
-        }
+    .channel-item:hover {
+      border-color: var(--primary-color);
+      box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+      transform: translateX(8px) scale(1.02);
+    }
 
-        .channel-item.active {
-            background: var(--primary-color);
-            color: white;
-            border-color: var(--secondary-color);
-            box-shadow: 0 4px 16px rgba(33,150,243,0.3);
-        }
+    .channel-item.active {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--secondary-color);
+      box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
+    }
 
-        .channel-item.hidden {
-            opacity: 0;
-            transform: scale(0.9);
-            height: 0;
-            margin: 0;
-            padding: 0;
-            border: 0;
-        }
+    .channel-item.hidden {
+      opacity: 0;
+      transform: scale(0.9);
+      height: 0;
+      margin: 0;
+      padding: 0;
+      border: 0;
+    }
 
-        #video-player {
-            width: 100%;
-            height: 80vh;
-            border-radius: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
-            background: #000;
-            border: 2px solid rgba(255,255,255,0.1);
-        }
+    .video-container {
+      flex: 1;
+      padding: 2rem;
+      background: linear-gradient(45deg, #f8f9fa 0%, #f1f3f5 100%);
+      position: relative;
+    }
 
-        .loading-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: var(--primary-color);
-            font-size: 18px;
-            opacity: 0;
-        }
+    #video-player, #video-webrtc {
+      width: 100%;
+      height: 70vh;
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      background: #000;
+      border: 2px solid rgba(255, 255, 255, 0.1);
+      display: none;
+    }
 
-        @media (max-width: 768px) {
-            .container {
-                flex-direction: column;
-                height: auto;
-            }
-            
-            .sidebar {
-                width: 100%;
-                height: 40vh;
-            }
-            
-            #video-player {
-                height: 60vh;
-            }
-        }
-    </style>
+    .loading-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: var(--primary-color);
+      font-size: 18px;
+      opacity: 0;
+    }
+
+    .mode-toggle {
+      display: flex;
+      border: 2px solid #ccc;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+
+    .mode-btn {
+      padding: 10px 16px;
+      background: #fff;
+      border: none;
+      font-size: 14px;
+      cursor: pointer;
+      outline: none;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .mode-btn:not(:last-child) {
+      border-right: 2px solid #ccc;
+    }
+
+    .mode-btn:hover {
+      background: #f0f0f0;
+    }
+
+    .mode-btn.active {
+      background: var(--primary-color);
+      color: white;
+      font-weight: bold;
+    }
+    
+    .playback-hint {
+        background: #e3f2fd;
+        color: #1565c0;
+        padding: 12px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(33, 150, 243, 0.1);
+    }
+
+    .playback-hint i {
+        font-size: 16px;
+        color: #1565c0;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        height: auto;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: 40vh;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="header">
-        <h1>ZJU Classroom Stream</h1>
-    </div>
-    
-    <div class="container">
-        <div class="sidebar">
-            <div class="search-box">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" class="search-input" placeholder="Type Classroom" id="searchInput">
-            </div>
-            <ul class="channel-list" id="channelList">
-                <div class="loading-text" id="loadingText">Loading...</div>
-            </ul>
-        </div>
-        
-        <div class="video-container">
-            <video id="video-player" controls></video>
-        </div>
+  <div class="header">
+    <h1>ZJU Classroom Stream</h1>
+  </div>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="search-box">
+        <i class="fas fa-search search-icon"></i>
+        <input type="text" class="search-input" placeholder="Type Classroom" id="searchInput" />
+      </div>
+      <ul class="channel-list" id="channelList">
+        <div class="loading-text" id="loadingText">Loading...</div>
+      </ul>
     </div>
 
-    <script>
-        // 初始化HLS播放器
-        const video = document.getElementById('video-player');
-        let hls = null;
-        let allChannels = [];
+    <div class="video-container">
+      <div style="margin-bottom: 1rem; display: flex; align-items: center; gap: 1rem;">
+        <span>播放方式：</span>
+        <div class="mode-toggle">
+          <button class="mode-btn active" data-mode="hls" title="HLS 播放">📺 HLS</button>
+          <button class="mode-btn" data-mode="webrtc" title="WebRTC 播放">🔴 WebRTC</button>
+        </div>
+      </div>
+      <div class="playback-hint">
+        <i class="fas fa-circle-info"></i>
+        两种播放方式可能只有一种可用，无法播放时请手动切换播放方式。
+      </div>
+      <video id="video-player" autoplay playsinline controls></video>
+      <video id="video-webrtc" autoplay playsinline controls></video>
+    </div>
+  </div>
 
-        function initVideoPlayer(streamUrl) {
-            if (hls) {
-                hls.destroy();
-            }
-            
-            if (Hls.isSupported()) {
-                hls = new Hls();
-                hls.loadSource(streamUrl);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                    video.play();
-                });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = streamUrl;
-                video.addEventListener('loadedmetadata', () => {
-                    video.play();
-                });
-            }
-        }
+  <script>
+    const videoHLS = document.getElementById('video-player');
+    const videoWebRTC = document.getElementById('video-webrtc');
+    let hls = null;
+    let currentStreamId = null;
+    let currentPlayer = null;
+    let currentMode = 'hls';
+    let allChannels = [];
 
-        // 搜索功能
-        function filterChannels(keyword) {
-            const normalizedKeyword = keyword.toLowerCase().trim();
-            
-            allChannels.forEach(item => {
-                const isMatch = item.name.toLowerCase().includes(normalizedKeyword);
-                item.element.classList.toggle('hidden', !isMatch);
-            });
+    function initHLSPlayer(streamId) {
+      if (hls) hls.destroy();
+      videoWebRTC.style.display = 'none';
+      videoHLS.style.display = 'block';
+      const streamUrl = `https://livepgc.cmc.zju.edu.cn/pgc/${streamId}.m3u8`;
+      if (Hls.isSupported()) {
+        hls = new Hls();
+        hls.loadSource(streamUrl);
+        hls.attachMedia(videoHLS);
+        hls.on(Hls.Events.MANIFEST_PARSED, () => videoHLS.play());
+      } else {
+        videoHLS.src = streamUrl;
+        videoHLS.addEventListener('loadedmetadata', () => videoHLS.play());
+      }
+    }
 
-            // 自动选择第一个可见项
-            const firstVisible = allChannels.find(item => !item.element.classList.contains('hidden'));
-            if (firstVisible) {
-                firstVisible.element.click();
-            }
-        }
+    function initWebRTCPlayer(streamId) {
+      if (currentPlayer) currentPlayer.destroy();
+      videoHLS.style.display = 'none';
+      videoWebRTC.style.display = 'block';
+      const url = `webrtc://mcloudpush.cmc.zju.edu.cn/live/${streamId}`;
+      currentPlayer = new JSWebrtc.Player(url, {
+        video: videoWebRTC,
+        autoplay: true,
+        onPlay: () => console.log(`Playing ${streamId}`),
+        onError: (err) => alert(`播放失败: ${err.message}`)
+      });
+    }
 
-        // 加载频道列表
-        async function loadChannelList() {
-            try {
-                document.getElementById('loadingText').style.opacity = 1;
-                
-                const response = await fetch('stream_db.json');
-                let channels = await response.json();
-                channels = Object.keys(channels).sort().reduce((sorted, key) => {
-                    sorted[key] = channels[key];
-                    return sorted;
-                }, {});
+    function updatePlayer(streamId) {
+      currentStreamId = streamId;
+      if (currentMode === 'hls') {
+        initHLSPlayer(streamId);
+      } else {
+        initWebRTCPlayer(streamId);
+      }
+    }
 
-                try {
-                    const response_extended = await fetch("https://mcloudpush.cmc.zju.edu.cn:10443/streams");
-                    if (response_extended.ok) {
-                        const data = await response_extended.json();
+    async function loadChannelList() {
+      try {
+        document.getElementById('loadingText').style.opacity = 1;
 
-                        data.streams.forEach(stream => {
-                            const streamKey = Object.keys(stream)[0];
-                            if (!channels.hasOwnProperty(streamKey)) {
-                                channels[`Unknown: ${streamKey}`] = streamKey;
-                            }
-                        });
-                    } else {
-                        console.warn(`Extended fetch failed with status: ${response_extended.status}`);
-                    }
-                } catch (error) {
-                    console.error('Error fetching extended data:', error);
-                }
+        const res = await fetch('stream_db.json');
+        let channels = await res.json();
 
-                const channelList = document.getElementById('channelList');
-                
-                allChannels = Object.entries(channels).map(([name, sessionId], index) => {
-                    const listItem = document.createElement('li');
-                    listItem.className = 'channel-item';
-                    listItem.textContent = name;
-                    
-                    listItem.addEventListener('click', () => {
-                        document.querySelectorAll('.channel-item').forEach(item => {
-                            item.classList.remove('active');
-                        });
-                        listItem.classList.add('active');
-                        const streamUrl = `https://livepgc.cmc.zju.edu.cn/pgc/${sessionId}.m3u8`;
-                        initVideoPlayer(streamUrl);
-                    });
+        channels = Object.keys(channels).sort().reduce((sorted, key) => {
+          sorted[key] = channels[key];
+          return sorted;
+        }, {});
 
-                    channelList.appendChild(listItem);
-                    return { name, element: listItem };
-                });
+        const listEl = document.getElementById('channelList');
 
-                // 初始化搜索功能
-                document.getElementById('searchInput').addEventListener('input', (e) => {
-                    filterChannels(e.target.value);
-                });
+        allChannels = Object.entries(channels).map(([name, id]) => {
+          const li = document.createElement('li');
+          li.className = 'channel-item';
+          li.textContent = name;
+          li.addEventListener('click', () => {
+            document.querySelectorAll('.channel-item').forEach(item => item.classList.remove('active'));
+            li.classList.add('active');
+            updatePlayer(id);
+          });
+          listEl.appendChild(li);
+          return { name, id, element: li };
+        });
 
-                // 默认选中第一个
-                if (allChannels.length > 0) {
-                    allChannels[0].element.click();
-                }
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+          const keyword = e.target.value.toLowerCase().trim();
+          allChannels.forEach(item => {
+            const match = item.name.toLowerCase().includes(keyword);
+            item.element.classList.toggle('hidden', !match);
+          });
+          const firstVisible = allChannels.find(item => !item.element.classList.contains('hidden'));
+          if (firstVisible) firstVisible.element.click();
+        });
 
-                document.getElementById('loadingText').style.opacity = 0;
-                
-            } catch (error) {
-                console.error('Failed to load stream list:', error);
-                document.getElementById('loadingText').textContent = "Load failed, try refreshing the page.";
-            }
-        }
+        if (allChannels.length > 0) allChannels[0].element.click();
 
-        // 页面加载
-        window.addEventListener('DOMContentLoaded', loadChannelList);
-    </script>
+        document.getElementById('loadingText').style.opacity = 0;
+      } catch (err) {
+        console.error(err);
+        document.getElementById('loadingText').textContent = '加载失败，请刷新重试。';
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadChannelList();
+
+      document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentMode = btn.dataset.mode;
+          if (currentStreamId) updatePlayer(currentStreamId);
+        });
+      });
+    });
+  </script>
 </body>
 </html>
