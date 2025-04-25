@@ -63,7 +63,7 @@ async function loadChannelList() {
 
                 data.streams.forEach(stream => {
                     const streamKey = Object.keys(stream)[0];
-                    if (!channels.hasOwnProperty(streamKey)) {
+                    if (!Object.values(channels).includes(streamKey)) {
                         channels[`Unknown: ${streamKey}`] = streamKey;
                     }
                 });
