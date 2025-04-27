@@ -2,7 +2,9 @@ name: Update Stream Data
 
 on:
   schedule:
-    - cron: '0 */1 * * *'
+    # Adjusted to run every hour between 7:00 and 23:00 Beijing time (UTC+8)
+    - cron: '0 23-23 * * *'
+    - cron: '0 0-7 * * *'
   workflow_dispatch:
 
 jobs:
@@ -33,6 +35,7 @@ jobs:
       env:
         ZJUAM_USERNAME: ${{ secrets.ZJUAM_USERNAME }}
         ZJUAM_PASSWORD: ${{ secrets.ZJUAM_PASSWORD }}
+      timeout-minutes: 10 # Exit if the step runs longer than 10 minutes
       run: python update_db.py
 
     - name: Commit changes
@@ -43,3 +46,5 @@ jobs:
         git commit -m "Auto-update: $(date -u '+%Y-%m-%dT%H:%M:%SZ')" || echo "No changes to commit"
         git pull --rebase
         git push
+
+        
