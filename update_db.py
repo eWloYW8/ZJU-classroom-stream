@@ -4,6 +4,7 @@ import urllib3
 import json
 import os
 import traceback
+from concurrent.futures import ThreadPoolExecutor
 
 urllib3.disable_warnings()
 
@@ -70,14 +71,19 @@ class ZJUClassroomSession:
     def get_all_room_and_stream_id(self):
         courses = self.get_live_courses()
         res = {}
-        for course in courses:
+
+        def fetch_room_and_stream(course):
             try:
                 room, stream_id = self.get_room_and_stream_id(course["id"], course["sub_id"])
                 res[room] = stream_id
                 print(f"[GET] Room: {room}, Stream ID: {stream_id}")
             except:
-                print("Error: ",course)
+                print("Error: ", course)
                 traceback.print_exc()
+
+        with ThreadPoolExecutor() as executor:
+            executor.map(fetch_room_and_stream, courses)
+
         return res
 
 
