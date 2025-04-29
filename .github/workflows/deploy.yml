@@ -2,7 +2,8 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]  # 设置触发分支，这里使用 main 分支
+    branches: 
+      - master
   workflow_dispatch:    # 允许手动触发工作流
 
 jobs:
@@ -27,6 +28,12 @@ jobs:
         env:
           pubPath: ${{ secrets.PUB_PATH }}
         run: pnpm run build:gh-pages
+
+      - name: Create CNAME file if exists in secrets
+        run: |
+          if [ -n "${{ secrets.CNAME }}" ]; then
+            echo "${{ secrets.CNAME }}" > ./dist/CNAME
+          fi
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
