@@ -42,6 +42,13 @@ module.exports = (env) => {
           generator: {
             filename: 'js/[name][ext]'
           }
+        },
+        {
+          test: /\.json$/,
+          type: 'asset/resource',
+          generator: {
+            filename: '[name][ext]'
+          }
         }
       ]
     },
