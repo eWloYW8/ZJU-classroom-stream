@@ -60,16 +60,6 @@ body {
     font-weight: 500;
 }
 
-@media (max-width: 768px) {
-    .github-text {
-        display: none;
-    }
-
-    .github-corner {
-        padding: 8px 12px;
-    }
-}
-
 .header h1 {
     margin: 0;
     font-size: 1.5rem;
@@ -149,15 +139,6 @@ body {
     box-shadow: 0 4px 16px rgba(33, 150, 243, 0.3);
 }
 
-.channel-item.hidden {
-    opacity: 0;
-    transform: scale(0.9);
-    height: 0;
-    margin: 0;
-    padding: 0;
-    border: 0;
-}
-
 .video-container {
     flex: 1;
     padding: 2rem;
@@ -167,17 +148,14 @@ body {
     position: relative;
 }
 
-.loading-text {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: var(--primary-color);
-    font-size: 18px;
-    opacity: 0;
+.mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
 }
 
-.mode-toggle {
+.mode-buttons {
     display: flex;
     border: 2px solid #ccc;
     border-radius: 10px;
@@ -226,15 +204,20 @@ body {
     color: #1565c0;
 }
 
-#video-player,
-#video-webrtc {
+video {
     width: 100%;
     height: calc(100% - 120px);
     border-radius: 12px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
     background: #000;
     border: 2px solid rgba(255, 255, 255, 0.1);
-    display: none;
+}
+
+.loading-text {
+    text-align: center;
+    color: var(--primary-color);
+    font-size: 18px;
+    padding: 20px;
 }
 
 @media (max-width: 768px) {
@@ -248,7 +231,15 @@ body {
         height: 40vh;
     }
 
-    #video-player, #video-webrtc {
+    video {
         height: 60vh;
     }
-}
+
+    .github-text {
+        display: none;
+    }
+
+    .github-corner {
+        padding: 8px 12px;
+    }
+} 
