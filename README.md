@@ -28,12 +28,12 @@ A web-based platform that provides live streaming of classroom sessions at Zheji
 
 2. Install frontend dependencies:
    ```bash
-   npm install
+   pnpm install
    ```
 
 3. Build the project:
    ```bash
-   npm run build
+   pnpm run build
    ```
    The production-ready static files will be generated in the `dist/` folder.
 
