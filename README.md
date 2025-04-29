@@ -16,6 +16,8 @@ A web-based platform that provides live streaming of classroom sessions at Zheji
 
 [https://zjustream.p5s.fun](https://zjustream.p5s.fun)
 
+[![Deploy to GitHub Pages](https://github.com/eWloYW8/ZJU-classroom-stream/actions/workflows/deploy.yml/badge.svg)](https://github.com/eWloYW8/ZJU-classroom-stream/actions/workflows/deploy.yml)
+
 ## Deploy
 
 1. Clone the repository:
