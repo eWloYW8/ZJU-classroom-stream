@@ -88,8 +88,8 @@ class ZJUClassroomSession:
 
 
 if __name__ == "__main__":
-    if os.path.exists("stream_db.json"):
-        data = json.load(open("stream_db.json", "r", encoding="utf-8"))
+    if os.path.exists("./public/stream_db.json"):
+        data = json.load(open("./public/stream_db.json", "r", encoding="utf-8"))
     else:
         data = {}
     print("Original data:" + str(data))
@@ -98,5 +98,5 @@ if __name__ == "__main__":
     print("New data:" + str(new_data))
     data.update(new_data)
     print("Updated data:" + str(data))
-    with open("stream_db.json", "w", encoding="utf-8") as f:
+    with open("./public/stream_db.json", "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
