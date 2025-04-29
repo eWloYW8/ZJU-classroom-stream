@@ -10,16 +10,17 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
-    "vue": "^3.3.4",
+    "@fortawesome/fontawesome-free": "^6.4.0",
     "hls.js": "^1.4.12",
     "normalize.css": "^8.0.1",
-    "@fortawesome/fontawesome-free": "^6.4.0"
+    "vue": "^3.3.4"
   },
   "devDependencies": {
     "@babel/core": "^7.22.5",
     "@babel/preset-env": "^7.22.5",
     "@vue/compiler-sfc": "^3.3.4",
     "babel-loader": "^9.1.3",
+    "copy-webpack-plugin": "^13.0.0",
     "css-loader": "^6.8.1",
     "gh-pages": "^6.1.1",
     "html-webpack-plugin": "^5.5.3",
@@ -30,4 +31,4 @@
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^4.15.1"
   }
-} 
+}

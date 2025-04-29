@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { VueLoaderPlugin } = require('vue-loader');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = (env) => {
   return {
@@ -56,7 +57,15 @@ module.exports = (env) => {
       new HtmlWebpackPlugin({
         template: './public/index.html'
       }),
-      new VueLoaderPlugin()
+      new VueLoaderPlugin(),
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: 'public/stream_db.json',
+            to: 'stream_db.json'
+          }
+        ]
+      })
     ],
     resolve: {
       extensions: ['.js', '.vue', '.json'],
