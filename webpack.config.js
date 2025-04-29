@@ -9,7 +9,8 @@ module.exports = (env) => {
       path: path.resolve(__dirname, 'dist'),
       filename: 'bundle.js',
       clean: true,
-      publicPath: env && env.publicPath ? env.publicPath : '/'
+      publicPath: process.env.pubPath || (env && env.publicPath) || '/'
+
     },
     module: {
       rules: [

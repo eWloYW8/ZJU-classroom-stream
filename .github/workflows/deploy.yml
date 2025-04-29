@@ -24,6 +24,8 @@ jobs:
         run: pnpm install
 
       - name: Build for GitHub Pages
+        env:
+          pubPath: ${{ secrets.PUB_PATH }}
         run: pnpm run build:gh-pages
 
       - name: Deploy
