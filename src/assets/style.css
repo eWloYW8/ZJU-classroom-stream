@@ -231,10 +231,6 @@ video {
         height: 40vh;
     }
 
-    video {
-        height: 60vh;
-    }
-
     .github-text {
         display: none;
     }
