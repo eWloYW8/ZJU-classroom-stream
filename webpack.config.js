@@ -63,6 +63,10 @@ module.exports = (env) => {
           {
             from: 'public/stream_db.json',
             to: 'stream_db.json'
+          },
+          {
+            from: 'src/jswebrtc.min.js',
+            to: 'js/jswebrtc.min.js'
           }
         ]
       })
