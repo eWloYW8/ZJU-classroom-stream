@@ -29,16 +29,16 @@ export default {
     this.cleanup();
   },
   methods: {
-    async cleanup() {
+    cleanup() {
       if (this.retryTimeout) {
         clearTimeout(this.retryTimeout);
         this.retryTimeout = null;
       }
-      await this.destroyPlayer();
+      this.destroyPlayer();
     },
     async initPlayer() {
       try {
-        await this.cleanup();
+        this.cleanup();
         
         if (Hls.isSupported()) {
           const video = this.$refs.videoElement;
@@ -93,7 +93,7 @@ export default {
         this.handlePlaybackError();
       }
     },
-    async destroyPlayer() {
+    destroyPlayer() {
       if (this.hls) {
         try {
           // 先暂停视频元素

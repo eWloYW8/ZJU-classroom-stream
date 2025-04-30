@@ -32,6 +32,10 @@
                     @click="switchMode('hls')" title="HLS 播放">
               📺 HLS
             </button>
+            <button :class="['mode-btn', { active: currentMode === 'flv' }]" 
+                    @click="switchMode('flv')" title="FLV 播放">
+              📺 FLV
+            </button>
             <button :class="['mode-btn', { active: currentMode === 'webrtc' }]" 
                     @click="switchMode('webrtc')" title="WebRTC 播放">
               🔴 WebRTC
@@ -45,6 +49,7 @@
         </div>
 
         <HLSPlayer v-if="currentMode === 'hls' && currentChannel" :streamId="currentChannel" />
+        <FLVPlayer v-else-if="currentMode === 'flv' && currentChannel" :streamId="currentChannel" />
         <WebRTCPlayer v-else-if="currentMode === 'webrtc' && currentChannel" :streamId="currentChannel" />
       </div>
     </div>
@@ -55,12 +60,14 @@
 import { ref, computed, onMounted } from 'vue';
 import HLSPlayer from './components/HLSPlayer.vue';
 import WebRTCPlayer from './components/WebRTCPlayer.vue';
+import FLVPlayer from './components/FLVPlayer.vue';
 
 export default {
   name: 'App',
   components: {
     HLSPlayer,
-    WebRTCPlayer
+    WebRTCPlayer,
+    FLVPlayer
   },
   setup() {
     const channels = ref([]);

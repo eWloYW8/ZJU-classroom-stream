@@ -27,16 +27,16 @@ export default {
     this.cleanup();
   },
   methods: {
-    async cleanup() {
+    cleanup() {
       if (this.retryTimeout) {
         clearTimeout(this.retryTimeout);
         this.retryTimeout = null;
       }
-      await this.destroyPlayer();
+      this.destroyPlayer();
     },
     async initPlayer() {
       try {
-        await this.cleanup();
+        this.cleanup();
         
         const url = `webrtc://mcloudpush.cmc.zju.edu.cn/live/${this.streamId}`;
         this.player = new JSWebrtc.Player(url, {
@@ -59,7 +59,7 @@ export default {
         this.handlePlaybackError();
       }
     },
-    async destroyPlayer() {
+    destroyPlayer() {
       if (this.player) {
         try {
           // 先暂停视频元素
