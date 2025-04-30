@@ -56,7 +56,7 @@ A web-based platform that provides live streaming of classroom sessions at Zheji
 
 7. Serve the built project locally (optional for testing):
    ```bash
-   npm install -g serve
+   pnpm install -g serve
    serve -s dist
    ```
    Then open:
