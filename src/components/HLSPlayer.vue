@@ -78,7 +78,7 @@ export default {
           });
         } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
           // 对于 Safari 浏览器
-          video.src = `https://mcloudpush.cmc.zju.edu.cn/live/${this.streamId}/index.m3u8`;
+          video.src = `https://livepgc.cmc.zju.edu.cn/pgc/${this.streamId}.m3u8`;
           video.addEventListener('loadedmetadata', () => {
             this.isPlaying = true;
             this.retryCount = 0;
