@@ -36,6 +36,10 @@
                     @click="switchMode('flv')" title="FLV 播放">
               📺 FLV
             </button>
+            <button :class="['mode-btn']" 
+                    @click="openRTMPStream" title="RTMP 播放">
+              📺 RTMP
+            </button>
             <button :class="['mode-btn', { active: currentMode === 'webrtc' }]" 
                     @click="switchMode('webrtc')" title="WebRTC 播放">
               🔴 WebRTC
@@ -138,6 +142,14 @@ export default {
       currentMode.value = mode;
     };
 
+    const openRTMPStream = () => {
+      if (currentChannel.value) {
+        window.open(`rtmp://livepgc.cmc.zju.edu.cn/pgc/${currentChannel.value}`);
+      } else {
+        console.warn('No channel selected for RTMP playback.');
+      }
+    };
+
     onMounted(() => {
       loadChannels();
     });
@@ -150,7 +162,8 @@ export default {
       loading,
       filteredChannels,
       selectChannel,
-      switchMode
+      switchMode,
+      openRTMPStream
     };
   }
 };
