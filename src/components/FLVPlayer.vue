@@ -37,7 +37,7 @@
         this.destroyPlayer();
       },
       buildStreamUrl() {
-        return `http://livepgc.cmc.zju.edu.cn/pgc/${this.streamId}.flv`;
+        return `https://livepgc.cmc.zju.edu.cn/pgc/${this.streamId}.flv`;
       },
       async initPlayer() {
         try {
