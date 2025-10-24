@@ -26,6 +26,7 @@
             </button>
           </li>
           <li v-if="loading" class="loading-text">Loading...</li>
+          <li v-if="errorMessage" class="error-text">{{ errorMessage }}</li>
         </ul>
       </div>
 
@@ -88,6 +89,7 @@ export default {
     const searchQuery = ref('');
     const loading = ref(true);
     const pinnedChannels = ref([]);
+    const errorMessage = ref(null);
 
     // 检查频道是否已置顶
     const isPinned = (channelName) => pinnedChannels.value.includes(channelName);
@@ -132,10 +134,19 @@ export default {
     const loadChannels = async () => {
       try {
         loading.value = true;
+        errorMessage.value = null;
 
-        const keyResponse = await fetch('https://file.cc98.org/v4-upload/d/2025/1024/4f1xlql3.dat');
-        if (!keyResponse.ok) throw new Error(`Failed to fetch key (status: ${keyResponse.status})`);
-        const password = await keyResponse.text();
+        let password;
+        try {
+          const keyResponse = await fetch('https://file.cc98.org/v4-upload/d/2025/1024/4f1xlql3.dat');
+          if (!keyResponse.ok) {
+            throw new Error(`HTTP error ${keyResponse.status}`);
+          }
+          password = await keyResponse.text();
+        } catch (keyError) {
+          console.error('Key fetch failed:', keyError);
+          throw new Error('KEY_FETCH_FAILED');
+        }
 
         const dataResponse = await fetch('/stream_db.enc');
         if (!dataResponse.ok) throw new Error(`Failed to fetch data (status: ${dataResponse.status})`);
@@ -177,6 +188,11 @@ export default {
         loading.value = false;
       } catch (error) {
         console.error('Failed to load channels:', error);
+        if (error.message === 'KEY_FETCH_FAILED') {
+          errorMessage.value = '不在校园网环境下';
+        } else {
+          errorMessage.value = '加载失败，请稍后重试。';
+        }
         loading.value = false;
       }
     };
@@ -227,7 +243,8 @@ export default {
       switchMode,
       openRTMPStream,
       isPinned,
-      togglePin
+      togglePin,
+      errorMessage
     };
   }
 };

@@ -273,6 +273,15 @@ video {
     padding: 20px;
 }
 
+.error-text {
+  text-align: center;
+  color: #dc3545;
+  font-size: 16px;
+  font-weight: 500;
+  padding: 20px;
+  word-break: break-word;
+}
+
 @media (max-width: 768px) {
     .container {
         flex-direction: column;
